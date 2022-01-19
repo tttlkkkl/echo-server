@@ -1,13 +1,10 @@
-DOCKER_REPO = jmalloc/echo-server
-DOCKER_PLATFORMS += linux/amd64
-DOCKER_PLATFORMS += linux/arm64
-
--include .makefiles/Makefile
--include .makefiles/pkg/go/v1/Makefile
--include .makefiles/pkg/docker/v1/Makefile
-
-run: $(GO_DEBUG_DIR)/echo-server
-	$< $(RUN_ARGS)
-
-.makefiles/%:
-	@curl -sfL https://makefiles.dev/v1 | bash /dev/stdin "$@"
+repo=tttlkkkl/http-echo
+tag?=latest
+compile:
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o app -work $(shell pwd)/cmd/echo-server
+build:
+	docker build -t $(repo):$(tag) $(shell pwd)
+run:
+	LOG_HTTP_HEADERS=1 LOG_HTTP_BODY=1 ./app
+push:
+	docker push $(repo):$(tag)
